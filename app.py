@@ -18,15 +18,6 @@ class testHTTPServer_RequestHandler(BaseHTTPRequestHandler):
             if (now - clients[k][1]) > expiry:
                 del clients[k]
 
-    # Render a table showing all clients
-    def getHits(self):
-        result = template.replace("__NUM_CLIENTS__", str(len(clients)))
-        rows = ""
-        for k, v in clients.items():
-            rows += "<tr><td>" + k + "</td><td>" + str(v[0]) + "</td><td>" + v[1].strftime("%d-%m-%y %H:%M:%S") + "</td></tr>"
-        result = result.replace("__CLIENT_ROWS__", rows)
-        return result
-
     # GET
     def do_GET(self):    
         message = ""
@@ -63,12 +54,10 @@ class testHTTPServer_RequestHandler(BaseHTTPRequestHandler):
             else:
                 if parseresult.path == "/":                                        #GET / HTTP/1.1
                     print("Serving main page")
-                    #self.pruneClients(tstamp)
-                    message = self.getHits()
                     self.send_response(200)
                     self.send_header('Content-type','text/html')
                     self.end_headers()
-                    self.wfile.write(bytes(message, "utf8"))
+                    self.wfile.write(bytes(template, "utf8"))
                     return
                 else:                                                            # just serve up a file
                     print("Serving " + parseresult.path)
